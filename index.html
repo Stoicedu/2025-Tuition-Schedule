@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STOIC EDU - Tuition Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #4F46E5;
+            --primary-dark: #4338CA;
+            --secondary-color: #10B981;
+            --danger-color: #EF4444;
+            --text-dark: #1F2937;
+            --text-light: #6B7280;
+            --bg-light: #F9FAFB;
+            --bg-white: #FFFFFF;
+            --border-color: #E5E7EB;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #F5E6D3 0%, #E8D5C4 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            color: var(--text-dark);
+            margin-bottom: 40px;
+            padding: 30px 20px;
+        }
+
+        .logo-container {
+            margin-bottom: 25px;
+        }
+
+        .logo {
+            width: 400px;
+            height: auto;
+            max-width: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #2C3E50;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .header h1 i {
+            margin-right: 15px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: #5D6D7E;
+            opacity: 0.95;
+        }
+
+        /* Cards */
+        .calculator-card,
+        .result-card {
+            background: var(--bg-white);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--shadow-xl);
+            margin-bottom: 30px;
+        }
+
+        .calculator-card h2,
+        .result-card h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg-light);
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+
+        .form-group label i {
+            margin-right: 8px;
+            color: var(--primary-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background-color: var(--bg-white);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        /* Radio & Checkbox Groups */
+        .radio-group,
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-label,
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: var(--bg-white);
+        }
+
+        .radio-label:hover,
+        .checkbox-label:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(79, 70, 229, 0.05);
+        }
+
+        .radio-label input,
+        .checkbox-label input {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* Button */
+        .btn-primary {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: var(--bg-white);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            background: var(--text-light);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-primary i {
+            margin-right: 10px;
+        }
+
+        /* Result Details */
+        .result-details {
+            background: var(--bg-light);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-row .label {
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        .detail-row .value {
+            font-weight: 600;
+            color: var(--text-dark);
+            text-align: right;
+            max-width: 60%;
+        }
+
+        /* Price Breakdown */
+        .price-breakdown {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            font-size: 1.1rem;
+        }
+
+        .price-row.discount {
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .price-row.total {
+            border-top: 2px solid var(--primary-color);
+            margin-top: 10px;
+            padding-top: 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .price-row.per-person {
+            padding-top: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            background: rgba(79, 70, 229, 0.05);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        /* Module Info */
+        .module-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #FFF4E6;
+            border-left: 3px solid #FF9800;
+            border-radius: 4px;
+        }
+
+        .module-info small {
+            color: #E65100;
+            font-weight: 500;
+        }
+
+        /* Info Box */
+        .info-box {
+            display: flex;
+            align-items: flex-start;
+            background: #EFF6FF;
+            border-left: 4px solid var(--primary-color);
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .info-box i {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            margin-right: 12px;
+            margin-top: 2px;
+        }
+
+        .info-box p {
+            color: var(--text-dark);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: #5D6D7E;
+            padding: 20px;
+            opacity: 0.9;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .logo {
+                width: 280px;
+                height: auto;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .calculator-card,
+            .result-card {
+                padding: 25px;
+            }
+
+            .calculator-card h2,
+            .result-card h2 {
+                font-size: 1.5rem;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .detail-row .value {
+                text-align: left;
+            }
+
+            .price-row {
+                font-size: 1rem;
+            }
+
+            .price-row.total {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                width: 220px;
+                height: auto;
+            }
+
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .calculator-card,
+            .result-card {
+                padding: 20px;
+            }
+
+            .btn-primary {
+                font-size: 1rem;
+                padding: 14px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <img src="images/logo.png" alt="STOIC EDU Logo" class="logo">
+            </div>
+            <p class="subtitle">Tuition Calculator</p>
+        </header>
+
+        <main class="main-content">
+            <div class="calculator-card">
+                <h2>Course & Class Type Selection</h2>
+                
+                <!-- Course Selection -->
+                <div class="form-group">
+                    <label for="course">
+                        <i class="fas fa-book"></i> Select Course
+                    </label>
+                    <select id="course" class="form-control">
+                        <option value="">-- Please select a course --</option>
+                        <option value="financial-literacy">Financial Literacy Course</option>
+                        <option value="finance-native">Finance Native Course</option>
+                    </select>
+                </div>
+
+                <!-- Module Selection -->
+                <div class="form-group" id="module-group" style="display: none;">
+                    <label>
+                        <i class="fas fa-puzzle-piece"></i> Select Modules (Multiple selection available)
+                    </label>
+                    <div class="checkbox-group" id="module-checkboxes">
+                        <!-- Dynamically generated -->
+                    </div>
+                    <div class="module-info">
+                        <small>15% discount applies when selecting the full package.</small>
+                    </div>
+                </div>
+
+                <!-- Class Type -->
+                <div class="form-group" id="class-type-group" style="display: none;">
+                    <label>
+                        <i class="fas fa-users"></i> Class Type
+                    </label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="classType" value="single" checked>
+                            <span>1:1 Private Class</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="classType" value="duo">
+                            <span>2:1 Class</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Calculate Button -->
+                <button id="calculateBtn" class="btn-primary" disabled>
+                    <i class="fas fa-calculator"></i> Calculate Price
+                </button>
+            </div>
+
+            <!-- Results Display -->
+            <div class="result-card" id="resultCard" style="display: none;">
+                <h2>Calculation Results</h2>
+                
+                <div class="result-details">
+                    <div class="detail-row">
+                        <span class="label">Selected Course:</span>
+                        <span class="value" id="selectedCourse"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Selected Modules:</span>
+                        <span class="value" id="selectedModule"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Class Type:</span>
+                        <span class="value" id="selectedClassType"></span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Total Sessions:</span>
+                        <span class="value" id="totalSessions"></span>
+                    </div>
+                </div>
+
+                <div class="price-breakdown">
+                    <div class="price-row">
+                        <span>Total Price:</span>
+                        <span id="basePrice"></span>
+                    </div>
+                    <div class="price-row discount" id="packageDiscountRow" style="display: none;">
+                        <span>Package Discount (15%):</span>
+                        <span id="packageDiscount"></span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Final Price:</span>
+                        <span id="finalPrice"></span>
+                    </div>
+                    <div class="price-row per-person" id="perPersonRow" style="display: none;">
+                        <span>Price Per Student:</span>
+                        <span id="perPersonPrice"></span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <p id="additionalInfo"></p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2025 STOIC EDU. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        // Course data definition
+        const courseData = {
+            'financial-literacy': {
+                name: 'Financial Literacy Course',
+                sessions: 20,
+                duration: '60 minutes',
+                pricePerSession: {
+                    single: 75,
+                    duo: 60
+                },
+                modules: [
+                    { id: 'package', name: 'Full Package', sessions: 20, isPackage: true },
+                    { id: 'module1', name: 'Module 1: Money Fundamentals', sessions: 2, isPackage: false },
+                    { id: 'module2', name: 'Module 2: Money Management', sessions: 5, isPackage: false },
+                    { id: 'module3', name: 'Module 3: Investment Foundations', sessions: 5, isPackage: false },
+                    { id: 'module4', name: 'Module 4: Accounting Essentials', sessions: 8, isPackage: false }
+                ]
+            },
+            'finance-native': {
+                name: 'Finance Native Course',
+                sessions: 20,
+                duration: '75 minutes',
+                pricePerSession: {
+                    single: 100,
+                    duo: 80
+                },
+                modules: [
+                    { id: 'package', name: 'Full Package', sessions: 20, isPackage: true },
+                    { id: 'module1', name: 'Module 1: Stocks', sessions: 10, isPackage: false },
+                    { id: 'module2', name: 'Module 2: Bonds', sessions: 3, isPackage: false },
+                    { id: 'module3', name: 'Module 3: Derivatives', sessions: 4, isPackage: false },
+                    { id: 'module4', name: 'Module 4: Portfolio Management', sessions: 3, isPackage: false }
+                ]
+            }
+        };
+
+        // DOM elements
+        const courseSelect = document.getElementById('course');
+        const moduleCheckboxesContainer = document.getElementById('module-checkboxes');
+        const moduleGroup = document.getElementById('module-group');
+        const classTypeGroup = document.getElementById('class-type-group');
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultCard = document.getElementById('resultCard');
+
+        // Course selection event
+        courseSelect.addEventListener('change', function() {
+            const selectedCourse = this.value;
+            
+            if (selectedCourse) {
+                // Update module options
+                updateModuleOptions(selectedCourse);
+                moduleGroup.style.display = 'block';
+                classTypeGroup.style.display = 'block';
+                calculateBtn.disabled = false;
+                
+                // Hide results card
+                resultCard.style.display = 'none';
+            } else {
+                moduleGroup.style.display = 'none';
+                classTypeGroup.style.display = 'none';
+                calculateBtn.disabled = true;
+                resultCard.style.display = 'none';
+            }
+        });
+
+        // Update module options
+        function updateModuleOptions(courseId) {
+            const course = courseData[courseId];
+            moduleCheckboxesContainer.innerHTML = '';
+            
+            course.modules.forEach(module => {
+                const label = document.createElement('label');
+                label.className = 'checkbox-label';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.name = 'modules';
+                checkbox.value = module.id;
+                checkbox.dataset.sessions = module.sessions;
+                checkbox.dataset.isPackage = module.isPackage;
+                
+                // Full package checkbox event
+                if (module.isPackage) {
+                    checkbox.addEventListener('change', function() {
+                        handlePackageSelection(this.checked);
+                    });
+                } else {
+                    checkbox.addEventListener('change', function() {
+                        checkIfAllModulesSelected();
+                    });
+                }
+                
+                const span = document.createElement('span');
+                span.textContent = `${module.name} (${module.sessions} sessions)`;
+                
+                label.appendChild(checkbox);
+                label.appendChild(span);
+                moduleCheckboxesContainer.appendChild(label);
+            });
+        }
+
+        // Handle full package selection
+        function handlePackageSelection(isChecked) {
+            const checkboxes = moduleCheckboxesContainer.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                if (cb.dataset.isPackage === 'false') {
+                    cb.checked = false;
+                    cb.disabled = isChecked;
+                }
+            });
+            resultCard.style.display = 'none';
+        }
+
+        // Check if all individual modules are selected
+        function checkIfAllModulesSelected() {
+            const packageCheckbox = moduleCheckboxesContainer.querySelector('input[data-is-package="true"]');
+            const individualCheckboxes = moduleCheckboxesContainer.querySelectorAll('input[data-is-package="false"]');
+            
+            const allIndividualChecked = Array.from(individualCheckboxes).every(cb => cb.checked);
+            
+            if (allIndividualChecked) {
+                packageCheckbox.disabled = true;
+            } else {
+                packageCheckbox.disabled = false;
+            }
+            
+            resultCard.style.display = 'none';
+        }
+
+        // Calculate button click
+        calculateBtn.addEventListener('click', calculatePrice);
+
+        // Price calculation function
+        function calculatePrice() {
+            const selectedCourseId = courseSelect.value;
+            const classType = document.querySelector('input[name="classType"]:checked').value;
+            
+            if (!selectedCourseId) return;
+            
+            // Get selected modules
+            const selectedModules = Array.from(moduleCheckboxesContainer.querySelectorAll('input[type="checkbox"]:checked'));
+            
+            if (selectedModules.length === 0) {
+                alert('Please select at least one module.');
+                return;
+            }
+            
+            const course = courseData[selectedCourseId];
+            const pricePerSession = course.pricePerSession[classType];
+            
+            // Check if full package is selected
+            const isPackageSelected = selectedModules.some(cb => cb.dataset.isPackage === 'true');
+            
+            // Calculate total sessions
+            let totalSessions = 0;
+            let selectedModuleNames = [];
+            
+            selectedModules.forEach(checkbox => {
+                const sessions = parseInt(checkbox.dataset.sessions);
+                totalSessions += sessions;
+                
+                const moduleInfo = course.modules.find(m => m.id === checkbox.value);
+                selectedModuleNames.push(moduleInfo.name);
+            });
+            
+            // Calculate base price
+            let basePrice = pricePerSession * totalSessions;
+            
+            // For 2:1 class, calculate total price (for 2 students)
+            if (classType === 'duo') {
+                basePrice = basePrice * 2;
+            }
+            
+            // Calculate discount
+            let packageDiscount = 0;
+            
+            // Package discount (15%) - only when full package is selected
+            if (isPackageSelected) {
+                packageDiscount = basePrice * 0.15;
+            }
+            
+            // Final price
+            const finalPrice = basePrice - packageDiscount;
+            
+            // Price per person (for 2:1 class)
+            const perPersonPrice = classType === 'duo' ? finalPrice / 2 : 0;
+            
+            // Display results
+            displayResults({
+                course: course,
+                selectedModuleNames: selectedModuleNames,
+                classType: classType,
+                totalSessions: totalSessions,
+                basePrice: basePrice,
+                packageDiscount: packageDiscount,
+                finalPrice: finalPrice,
+                perPersonPrice: perPersonPrice,
+                isPackageSelected: isPackageSelected
+            });
+        }
+
+        // Number formatting function with thousands separator
+        function formatPrice(number) {
+            return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Display results function
+        function displayResults(data) {
+            // Course information
+            document.getElementById('selectedCourse').textContent = data.course.name;
+            document.getElementById('selectedModule').textContent = data.selectedModuleNames.join(', ');
+            
+            // Class type
+            const classTypeText = data.classType === 'single' ? '1:1 Private Class' : '2:1 Class (2 students, 20% discount per student applied)';
+            document.getElementById('selectedClassType').textContent = classTypeText;
+            
+            // Total sessions
+            document.getElementById('totalSessions').textContent = `${data.totalSessions} sessions`;
+            
+            // Price information
+            document.getElementById('basePrice').textContent = `$${formatPrice(data.basePrice)}`;
+            
+            // Package discount
+            const packageDiscountRow = document.getElementById('packageDiscountRow');
+            if (data.packageDiscount > 0) {
+                packageDiscountRow.style.display = 'flex';
+                document.getElementById('packageDiscount').textContent = `-$${formatPrice(data.packageDiscount)}`;
+            } else {
+                packageDiscountRow.style.display = 'none';
+            }
+            
+            // Final price
+            document.getElementById('finalPrice').textContent = `$${formatPrice(data.finalPrice)}`;
+            
+            // Price per person (only for 2:1 class)
+            const perPersonRow = document.getElementById('perPersonRow');
+            if (data.classType === 'duo') {
+                perPersonRow.style.display = 'flex';
+                document.getElementById('perPersonPrice').textContent = `$${formatPrice(data.perPersonPrice)}`;
+            } else {
+                perPersonRow.style.display = 'none';
+            }
+            
+            // Additional information
+            let additionalInfo = '';
+            if (data.classType === 'duo') {
+                additionalInfo = `For 2:1 classes, this is the total price for 2 students, with a 20% discount per student applied.`;
+            } else {
+                additionalInfo = `This is the price for 1:1 private class.`;
+            }
+            
+            if (data.isPackageSelected) {
+                additionalInfo += ' A 15% discount has been applied for selecting the full package.';
+            }
+            
+            document.getElementById('additionalInfo').textContent = additionalInfo;
+            
+            // Show results card
+            resultCard.style.display = 'block';
+            
+            // Smooth scroll
+            resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Hide results card when class type changes
+        document.querySelectorAll('input[name="classType"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                resultCard.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
